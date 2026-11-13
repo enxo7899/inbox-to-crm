@@ -1,0 +1,16 @@
+{
+  "name": "inbox-to-crm",
+  "type": "module",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Turns messy EN/IT/AL emails, WhatsApp messages and web forms into clean, de-duplicated CRM contacts with a review queue and measured accuracy.",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "eval": "node scripts/evaluate.mjs --errors",
+    "dev": "python3 -m http.server 5174"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.8.0"
+  }
+}

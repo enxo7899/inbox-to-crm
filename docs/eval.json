@@ -1,0 +1,42 @@
+{
+  "dev": {
+    "messages": 20,
+    "fieldAccuracy": 1,
+    "perField": {
+      "name": 1,
+      "email": 1,
+      "phone": 1,
+      "language": 1,
+      "intent": 1,
+      "property_type": 1,
+      "budget": 1,
+      "currency": 1,
+      "city": 1,
+      "bedrooms": 1
+    },
+    "auto": 15,
+    "autoAllCorrect": 15,
+    "review": 3,
+    "ignored": 2
+  },
+  "test": {
+    "messages": 15,
+    "fieldAccuracy": 0.98,
+    "perField": {
+      "name": 1,
+      "email": 1,
+      "phone": 1,
+      "language": 1,
+      "intent": 0.8,
+      "property_type": 1,
+      "budget": 1,
+      "currency": 1,
+      "city": 1,
+      "bedrooms": 1
+    },
+    "auto": 13,
+    "autoAllCorrect": 10,
+    "review": 1,
+    "ignored": 1
+  }
+}
