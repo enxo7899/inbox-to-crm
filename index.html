@@ -3,185 +3,361 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Inbox to CRM demo · EmSoft</title>
+<title>Inbox to CRM · live demo</title>
 <meta name="description" content="Live demo: messy emails, WhatsApp messages and web forms in English, Italian and Albanian turned into clean, de-duplicated CRM contacts." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
-  :root { --ink: #17202a; --muted: #5f6b76; --line: #e3e7eb; --bg: #f5f7f9; --card: #fff; --accent: #2457d6; --ok: #1f8a4c; --warn: #b26b00; --soft: #eef3ff; }
+  :root {
+    --paper: #f3f4f1; --card: #fff; --ink: #14181f; --muted: #646a72; --line: #dfe2dd; --line-2: #ecedea; --sel: #eef2fb;
+    --blue: #2149c4; --ok: #1c7a46; --warn: #93600a; --bad: #b3261e;
+    --f-name: #ffe6a8; --f-email: #d6e4ff; --f-phone: #cdeedc; --f-budget: #ffd6c9; --f-city: #e6dbff; --f-bedrooms: #d4f0f2; --f-property_type: #f2e1c9; --f-intent: #f1d9e6;
+    --sans: "Schibsted Grotesk", system-ui, sans-serif; --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  }
   * { box-sizing: border-box; }
-  body { margin: 0; font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--ink); background: var(--bg); }
-  header { background: var(--ink); color: #fff; padding: 28px 16px 24px; }
-  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 16px; }
-  header h1 { margin: 0 0 6px; font-size: 28px; letter-spacing: -.3px; }
-  header p { margin: 0; color: #c5ced6; max-width: 760px; }
-  header a { color: #9db8ff; }
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 20px 0; }
-  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
-  .stat b { display: block; font-size: 26px; letter-spacing: -.5px; }
-  .stat span { color: var(--muted); font-size: 13px; }
-  .grid { display: grid; grid-template-columns: minmax(280px, 360px) 1fr; gap: 16px; align-items: start; }
-  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
-  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
-  .panel h2 { font-size: 14px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0; padding: 12px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
-  .inbox { max-height: 760px; overflow-y: auto; }
-  .msg { padding: 10px 16px; border-bottom: 1px solid var(--line); cursor: pointer; }
-  .msg:hover, .msg.sel { background: var(--soft); }
-  .msg .meta { display: flex; gap: 8px; font-size: 12px; color: var(--muted); margin-bottom: 2px; }
-  .msg .txt { white-space: pre-wrap; font-size: 13px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-  .msg.sel .txt { -webkit-line-clamp: unset; }
-  .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 999px; background: #eef1f4; color: var(--muted); }
-  .tag.email { background: #e8efff; color: #2a4fb0; } .tag.whatsapp { background: #e3f6ea; color: #1f7a45; } .tag.web_form { background: #f4ecff; color: #6b3fb5; }
-  .tag.ok { background: #e3f6ea; color: var(--ok); } .tag.check, .tag.review { background: #fff2dc; color: var(--warn); } .tag.ignored { background: #eef1f4; color: var(--muted); }
-  .table-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; white-space: nowrap; }
-  th { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); background: #fafbfc; }
-  tr.hl td { background: #fffbe6; }
-  td small { color: var(--muted); display: block; }
-  .right { display: grid; gap: 16px; }
-  .try { padding: 14px 16px; display: grid; gap: 10px; }
-  textarea { width: 100%; min-height: 90px; font: inherit; border: 1px solid var(--line); border-radius: 8px; padding: 10px; resize: vertical; }
-  pre { margin: 0; background: #0f1720; color: #d7e3ee; padding: 12px; border-radius: 8px; font-size: 12px; overflow-x: auto; }
-  button { font: inherit; border: 0; border-radius: 8px; padding: 8px 14px; background: var(--accent); color: #fff; cursor: pointer; }
-  button.ghost { background: transparent; color: var(--accent); padding: 0; }
-  .rq { padding: 4px 0; }
-  .rq div { padding: 8px 16px; border-bottom: 1px solid var(--line); font-size: 13px; }
-  .rq div:last-child { border-bottom: 0; }
-  footer { color: var(--muted); text-align: center; padding: 32px 16px; font-size: 14px; }
-  footer a { color: var(--accent); }
-  .acc { padding: 12px 16px; font-size: 13px; color: var(--muted); }
-  .bars { display: grid; grid-template-columns: 110px 1fr 44px; gap: 6px 10px; align-items: center; padding: 0 16px 14px; font-size: 13px; }
-  .bar { height: 8px; background: #eef1f4; border-radius: 4px; overflow: hidden; } .bar i { display: block; height: 100%; background: var(--accent); }
+  [hidden] { display: none !important; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.5 var(--sans); }
+  a { color: inherit; }
+  button { font: inherit; cursor: pointer; }
+  .wrap { max-width: 1320px; margin: 0 auto; padding: 0 24px; }
+
+  .demo { background: var(--ink); color: #b9bec6; font-size: 13px; }
+  .demo .wrap { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; padding-top: 8px; padding-bottom: 8px; }
+  .demo b { color: #fff; font-weight: 600; }
+  .demo a { color: #fff; }
+
+  header { padding: 44px 0 28px; }
+  .top { display: flex; flex-wrap: wrap; gap: 12px 40px; align-items: end; justify-content: space-between; margin-bottom: 28px; }
+  h1 { font: 700 clamp(34px, 4.6vw, 56px)/1 var(--sans); letter-spacing: -1.6px; margin: 0; }
+  h1 span { color: var(--muted); font-weight: 500; }
+  .top p { margin: 0; max-width: 560px; color: var(--muted); font-size: 16px; }
+
+  .flow { display: grid; grid-template-columns: repeat(5, 1fr); border: 1px solid var(--line); border-radius: 12px; background: var(--card); overflow: hidden; }
+  .step { padding: 14px 18px; position: relative; border-left: 1px solid var(--line-2); }
+  .step:first-child { border-left: 0; }
+  .step:not(:last-child)::after { content: ""; position: absolute; right: -7px; top: 50%; width: 12px; height: 12px; background: var(--card); border-top: 1px solid var(--line); border-right: 1px solid var(--line); transform: translateY(-50%) rotate(45deg); z-index: 1; }
+  .step b { display: block; font: 600 30px/1.1 var(--sans); letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+  .step span { font-size: 13px; color: var(--muted); }
+  .step.out b { color: var(--blue); }
+  .step button { all: unset; cursor: pointer; display: block; }
+  .step button:hover span { color: var(--ink); text-decoration: underline; }
+
+  h2 { font: 600 13px var(--mono); text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0; }
+  .work { display: grid; grid-template-columns: 360px minmax(0, 1fr); border: 1px solid var(--line); border-radius: 12px; background: var(--card); overflow: hidden; height: 720px; }
+  .list { border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
+  .filters { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+  .filters button { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 3px 10px; font-size: 12.5px; color: var(--muted); }
+  .filters button[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .items { overflow-y: auto; flex: 1; }
+  .item { display: block; width: 100%; text-align: left; border: 0; border-bottom: 1px solid var(--line-2); background: transparent; padding: 11px 14px; }
+  .item:hover { background: #f8f9f7; }
+  .item[aria-current="true"] { background: var(--sel); box-shadow: inset 3px 0 0 var(--blue); }
+  .item .meta { display: flex; gap: 8px; align-items: center; font-size: 12px; color: var(--muted); margin-bottom: 3px; }
+  .item .meta .dest { margin-left: auto; font-family: var(--mono); font-size: 11.5px; }
+  .item .who { font-weight: 600; font-size: 14px; }
+  .item .txt { font-size: 13px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .item.own .who { color: var(--blue); }
+  .ch { font: 500 11px var(--mono); padding: 1px 6px; border-radius: 4px; background: var(--line-2); color: var(--ink); }
+  .dest.ok { color: var(--ok); } .dest.review { color: var(--warn); } .dest.ignored { color: var(--muted); }
+
+  .detail { overflow-y: auto; min-height: 0; }
+  .dh { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding: 14px 22px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--card); z-index: 1; }
+  .dh .id { font: 500 13px var(--mono); }
+  .dh .split { font-size: 12.5px; color: var(--muted); }
+  .route { margin-left: auto; font-size: 13.5px; font-weight: 500; }
+  .route.ok { color: var(--ok); } .route.review { color: var(--warn); } .route.ignored { color: var(--muted); }
+  .dbody { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); }
+  .raw { padding: 18px 22px; border-right: 1px solid var(--line-2); }
+  .raw pre { margin: 0; font: 14px/1.75 var(--sans); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .raw textarea { width: 100%; min-height: 220px; font: 14px/1.6 var(--sans); border: 1px solid var(--line); border-radius: 8px; padding: 12px; resize: vertical; }
+  .raw .hint { font-size: 12.5px; color: var(--muted); margin: 10px 0 0; }
+  mark { border-radius: 3px; padding: 1px 2px; color: inherit; }
+  .fields { padding: 18px 22px; }
+  .fields table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .fields td { padding: 7px 0; border-bottom: 1px solid var(--line-2); vertical-align: top; }
+  .fields td:first-child { width: 120px; color: var(--muted); font-size: 13px; }
+  .fields td:first-child i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 7px; }
+  .fields .v { font-family: var(--mono); font-size: 13px; }
+  .fields .null { color: #a3a8ad; }
+  .fields .chk { text-align: right; font-size: 12.5px; white-space: nowrap; }
+  .chk.yes { color: var(--ok); } .chk.no { color: var(--bad); }
+  .fields .gold { display: block; color: var(--bad); font-size: 12px; font-family: var(--mono); }
+  .note { margin: 14px 0 0; font-size: 13px; color: var(--muted); }
+  .reasons { margin-top: 12px; padding: 10px 12px; border-radius: 8px; background: #fbf3e2; color: var(--warn); font-size: 13.5px; }
+
+  section.block { margin-top: 28px; }
+  .bh { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .btn { border: 1px solid var(--ink); background: var(--ink); color: #fff; border-radius: 8px; padding: 6px 14px; font-size: 13.5px; font-weight: 500; }
+  .btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+  .tbl { border: 1px solid var(--line); border-radius: 12px; background: var(--card); overflow-x: auto; }
+  table.crm { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .crm th, .crm td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line-2); white-space: nowrap; vertical-align: top; }
+  .crm th { font: 500 11.5px var(--mono); color: var(--muted); background: #fafbf9; }
+  .crm tr:last-child td { border-bottom: 0; }
+  .crm tbody tr { cursor: pointer; }
+  .crm tbody tr:hover td { background: #f8f9f7; }
+  .crm tr.hl td { background: var(--sel); }
+  .crm td small { display: block; color: var(--muted); font-size: 12px; }
+  .crm .mono { font-family: var(--mono); font-size: 12.5px; }
+  .st { font: 500 11.5px var(--mono); padding: 2px 7px; border-radius: 4px; }
+  .st.ok { background: #e2f3e8; color: var(--ok); } .st.check { background: #fbf0d9; color: var(--warn); }
+  .merged { font: 500 11.5px var(--mono); color: var(--blue); }
+
+  .acc { display: grid; grid-template-columns: 1fr 1.1fr; gap: 40px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); padding: 24px; }
+  .acc .big { font: 700 64px/1 var(--sans); letter-spacing: -2px; margin: 8px 0 10px; }
+  .acc p { margin: 0 0 10px; color: #3a3f46; }
+  .bars { display: grid; grid-template-columns: 110px 1fr 48px; gap: 9px 12px; align-items: center; font-size: 13.5px; }
+  .bars .bar { height: 8px; background: var(--line-2); border-radius: 4px; overflow: hidden; }
+  .bars .bar i { display: block; height: 100%; background: var(--ink); }
+  .bars .bar i.low { background: var(--warn); }
+  .bars b { font: 500 12.5px var(--mono); text-align: right; }
+
+  footer { padding: 32px 0 48px; font-size: 13.5px; color: var(--muted); }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+
+  @media (max-width: 1000px) {
+    .work { grid-template-columns: 1fr; height: auto; }
+    .list { border-right: 0; border-bottom: 1px solid var(--line); }
+    .items { max-height: 340px; }
+    .dbody, .acc { grid-template-columns: 1fr; }
+    .raw { border-right: 0; border-bottom: 1px solid var(--line-2); }
+  }
+  @media (max-width: 640px) {
+    .wrap { padding: 0 14px; }
+    .flow { grid-template-columns: 1fr 1fr; }
+    .step { border-left: 0; border-top: 1px solid var(--line-2); }
+    .step:nth-child(-n+2) { border-top: 0; }
+    .step:nth-child(even) { border-left: 1px solid var(--line-2); }
+    .step::after { display: none; }
+    .step:last-child { grid-column: 1 / -1; }
+    .route { margin-left: 0; width: 100%; }
+    .raw, .fields, .dh { padding-left: 16px; padding-right: 16px; }
+  }
 </style>
 </head>
 <body>
-<header>
-  <div class="wrap">
-    <h1>Inbox → CRM</h1>
-    <p>35 real-looking enquiries to a property agency, by email, WhatsApp and web form, in English, Italian and Albanian. They are turned into clean CRM contacts: names, phones in international format, budgets with currency, duplicates merged, and anything unclear sent to a person. Everything runs in your browser. <a href="https://github.com/enxo7899/inbox-to-crm">Source on GitHub</a></p>
+<div class="demo"><div class="wrap">
+  <span><b>Live demo by EmSoft.</b> The agency and every message are fictional, written for this demo. Nothing leaves your browser.</span>
+  <a href="https://github.com/enxo7899/inbox-to-crm">Source on GitHub →</a>
+</div></div>
+
+<header><div class="wrap">
+  <div class="top">
+    <h1>Inbox to CRM <span>for a property agency</span></h1>
+    <p>Enquiries arrive by email, WhatsApp and web form, in English, Italian and Albanian. This turns them into clean contacts, merges people who wrote twice and hands anything unclear to a person. Click any message to see exactly what was read from it.</p>
   </div>
-</header>
+  <div class="flow" id="flow"></div>
+</div></header>
 
 <main class="wrap">
-  <div class="stats" id="stats"></div>
-
-  <div class="grid">
-    <section class="panel">
-      <h2>Inbox <span id="inboxCount"></span></h2>
-      <div class="inbox" id="inbox"></div>
-    </section>
-
-    <div class="right">
-      <section class="panel">
-        <h2>CRM contacts <button class="ghost" id="csv">Download CSV</button></h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Contact</th><th>Phone / email</th><th>Wants</th><th>Budget</th><th>Where</th><th>Next step</th><th>From</th><th>Status</th></tr></thead>
-            <tbody id="crm"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="panel">
-        <h2>Review queue <span class="tag review" id="rqCount"></span></h2>
-        <div class="rq" id="rq"></div>
-      </section>
-
-      <section class="panel">
-        <h2>Accuracy on held-out messages</h2>
-        <p class="acc" id="accNote"></p>
-        <div class="bars" id="bars"></div>
-      </section>
-
-      <section class="panel">
-        <h2>Try your own message</h2>
-        <div class="try">
-          <textarea id="own">Buongiorno, mi chiamo Sara Greco. Cerco un appartamento 2+1 in affitto a Durazzo, massimo 550 euro al mese. Tel 347 555 1212</textarea>
-          <div><button id="run">Extract</button></div>
-          <pre id="out"></pre>
-        </div>
-      </section>
+  <div class="work">
+    <div class="list">
+      <div class="filters" id="filters"></div>
+      <div class="items" id="items"></div>
     </div>
+    <div class="detail" id="detail"></div>
   </div>
+
+  <section class="block" id="crm-section">
+    <div class="bh"><h2>CRM contacts · <span id="ccount"></span></h2><button class="btn ghost" id="csv">Download CSV</button></div>
+    <div class="tbl">
+      <table class="crm">
+        <thead><tr><th>contact</th><th>phone · email</th><th>wants</th><th>budget</th><th>where</th><th>next step</th><th>from</th><th>status</th></tr></thead>
+        <tbody id="crm"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block" id="accuracy">
+    <div class="bh"><h2>Measured accuracy</h2></div>
+    <div class="acc" id="acc"></div>
+  </section>
 </main>
 
-<footer>Built by <a href="https://github.com/enxo7899">EmSoft</a> · data cleaning, CRM set-up and AI automation for small businesses.</footer>
+<footer><div class="wrap">
+  <span>Built by <a href="https://github.com/enxo7899">EmSoft</a>: data cleaning, CRM set-up and AI automation for small businesses.</span>
+  <span>MIT licensed</span>
+</div></footer>
 
 <script type="module">
   import { buildCrm, toCsv } from "./src/crm.js";
   import { extract, FIELDS } from "./src/extract.js";
+  import { findSpans } from "./src/highlight.js";
 
   const [messages, evalRes] = await Promise.all([
     fetch("data/messages.json").then((r) => r.json()),
     fetch("docs/eval.json").then((r) => r.json()).catch(() => null),
   ]);
   const { contacts, review, ignored, processed } = buildCrm(messages);
+  const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
   const money = (n, c) => (n == null ? "" : `${new Intl.NumberFormat("en").format(n)} ${c ?? "?"}`);
-  const label = { web_form: "web form", whatsapp: "WhatsApp", email: "email" };
+  const CH = { web_form: "form", whatsapp: "WhatsApp", email: "email" };
+  const LABEL = { name: "name", email: "email", phone: "phone", language: "language", intent: "wants to", property_type: "property", budget: "budget", currency: "currency", city: "city", bedrooms: "bedrooms" };
+  const HL = new Set(["name", "email", "phone", "budget", "city", "bedrooms", "property_type", "intent"]);
+  const contactOf = new Map(contacts.flatMap((c) => c.messages.map((m) => [m, c])));
+  const routeOf = (m) => (m.extracted.status === "ignored" ? "ignored" : contactOf.has(m.id) ? "ok" : "review");
 
-  const merged = contacts.filter((c) => c.merged).length;
-  const stat = (b, s) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`;
-  document.getElementById("stats").innerHTML =
-    stat(messages.length, "messages in") +
-    stat(contacts.length, "CRM contacts out") +
-    stat(merged, "people merged across channels") +
-    stat(review.length + contacts.filter((c) => c.status === "check").length, "sent to a person") +
-    stat(ignored.length, "ignored (newsletters, notifications)") +
-    (evalRes ? stat(Math.round(evalRes.test.fieldAccuracy * 100) + "%", "field accuracy on held-out set") : "");
-
-  const contactOf = new Map(contacts.flatMap((c) => c.messages.map((m) => [m, c.id])));
-  const statusOf = (m) => (m.extracted.status === "ignored" ? "ignored" : contactOf.has(m.id) ? "ok" : "review");
-  document.getElementById("inboxCount").textContent = messages.length;
-  document.getElementById("inbox").innerHTML = processed.map((m) => `
-    <div class="msg" data-id="${m.id}">
-      <div class="meta"><span class="tag ${m.channel}">${label[m.channel]}</span><span>${m.id}</span><span class="tag ${statusOf(m)}">${statusOf(m) === "ok" ? "→ " + contactOf.get(m.id) : statusOf(m)}</span></div>
-      <div class="txt">${esc(m.raw)}</div>
-    </div>`).join("");
-
-  document.getElementById("crm").innerHTML = contacts.map((c) => `
-    <tr id="${c.id}">
-      <td><b>${esc(c.name ?? "—")}</b><small>${c.id} · ${(c.language ?? "").toUpperCase()}</small></td>
-      <td>${esc(c.phones[0] ?? "")}<small>${esc(c.emails[0] ?? "")}</small></td>
-      <td>${esc(c.intent)}<small>${esc(c.property_type ?? "")}${c.bedrooms ? ` · ${c.bedrooms} bed` : ""}</small></td>
-      <td>${money(c.budget, c.currency)}</td>
-      <td>${esc(c.city ?? "")}</td>
-      <td>${esc(c.next_step)}</td>
-      <td>${c.channels.map((ch) => `<span class="tag ${ch}">${label[ch]}</span>`).join(" ")}${c.merged ? `<small>${c.messages.length} messages merged</small>` : ""}</td>
-      <td><span class="tag ${c.status}">${c.status === "ok" ? "auto" : "check"}</span>${c.reasons.length ? `<small>${esc(c.reasons.join(", "))}</small>` : ""}</td>
-    </tr>`).join("");
-
-  document.getElementById("rqCount").textContent = review.length;
-  document.getElementById("rq").innerHTML = review.map((m) => `<div><b>${m.id}</b> <span class="tag ${m.channel}">${label[m.channel]}</span> “${esc(m.raw.slice(0, 90))}” <small style="color:var(--warn)">${esc(m.extracted.reasons.join(", "))}</small></div>`).join("");
-
-  if (evalRes) {
-    const t = evalRes.test;
-    document.getElementById("accNote").textContent = `The rules were tuned only on ${evalRes.dev.messages} development messages; the ${t.messages} test messages were never used to change a rule. ${Math.round(t.fieldAccuracy * 100)}% of fields were right. Intent is the weakest field, which is why unclear messages can be passed to Claude (see llm/ in the repo).`;
-    document.getElementById("bars").innerHTML = FIELDS.map((f) => `<span>${f.replace("_", " ")}</span><div class="bar"><i style="width:${t.perField[f] * 100}%"></i></div><b>${Math.round(t.perField[f] * 100)}%</b>`).join("");
-  }
-
-  document.getElementById("inbox").addEventListener("click", (e) => {
-    const el = e.target.closest(".msg");
-    if (!el) return;
-    document.querySelectorAll(".msg.sel, tr.hl").forEach((n) => n.classList.remove("sel", "hl"));
-    el.classList.add("sel");
-    const row = document.getElementById(contactOf.get(el.dataset.id));
-    if (row) { row.classList.add("hl"); row.scrollIntoView({ block: "nearest", behavior: "smooth" }); }
+  // ---------------------------------------------------------------- pipeline strip
+  const merged = contacts.filter((c) => c.merged);
+  const records = processed.length - ignored.length - review.length;
+  const step = (n, label, filter, cls = "") => `<div class="step ${cls}"><button data-jump="${filter}"><b>${n}</b><span>${label}</span></button></div>`;
+  $("flow").innerHTML =
+    step(messages.length, "messages in", "all") +
+    step(ignored.length, "ignored: newsletters, notifications", "ignored") +
+    step(review.length, "no contact details, sent to a person", "review") +
+    step(merged.length, `people who wrote more than once, merged`, "merged") +
+    step(contacts.length, `CRM contacts out, from ${records} enquiries`, "crm", "out");
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-jump]");
+    if (!b) return;
+    if (b.dataset.jump === "crm") { $("crm-section").scrollIntoView({ behavior: "smooth" }); return; }
+    setFilter(b.dataset.jump);
+    document.querySelector(".work").scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
-  document.getElementById("csv").onclick = () => {
+  // ---------------------------------------------------------------- inbox list
+  const FILTERS = [["all", "All"], ["email", "Email"], ["whatsapp", "WhatsApp"], ["web_form", "Form"], ["review", "Needs a person"], ["merged", "Merged"], ["ignored", "Ignored"]];
+  let filter = "all", current = null;
+  $("filters").innerHTML = FILTERS.map(([k, l]) => `<button data-f="${k}" aria-pressed="${k === filter}">${l}</button>`).join("");
+  $("filters").onclick = (e) => { const b = e.target.closest("[data-f]"); if (b) setFilter(b.dataset.f); };
+  function setFilter(f) {
+    filter = f;
+    document.querySelectorAll("[data-f]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.f === f));
+    renderList();
+  }
+  const firstLine = (m) => m.extracted.name ?? (m.raw.match(/^From: ([^<\n]+)/)?.[1]?.trim()) ?? m.raw.split("\n")[0].slice(0, 40);
+  function renderList() {
+    const show = processed.filter((m) => {
+      if (filter === "all") return true;
+      if (filter === "merged") return contactOf.get(m.id)?.merged;
+      if (["review", "ignored"].includes(filter)) return routeOf(m) === filter || (filter === "review" && contactOf.get(m.id)?.status === "check");
+      return m.channel === filter;
+    });
+    $("items").innerHTML = (filter === "all" ? `<button class="item own" data-id="own" aria-current="${current === "own"}"><div class="meta"><span class="ch">yours</span></div><div class="who">Paste your own message</div><div class="txt">Any language we support. It's read as you type.</div></button>` : "") +
+      show.map((m) => {
+        const r = routeOf(m), c = contactOf.get(m.id);
+        return `<button class="item" data-id="${m.id}" aria-current="${current === m.id}">
+          <div class="meta"><span class="ch">${CH[m.channel]}</span><span>${m.id}</span><span class="dest ${r}">${r === "ok" ? "→ " + c.id : r === "review" ? "→ person" : "ignored"}</span></div>
+          <div class="who">${esc(firstLine(m))}</div>
+          <div class="txt">${esc(m.raw.replace(/^(From|Subject|Oggetto|Name|Email|Phone|Message):.*\n?/gm, "").trim())}</div>
+        </button>`;
+      }).join("");
+  }
+  $("items").onclick = (e) => { const b = e.target.closest("[data-id]"); if (b) select(b.dataset.id); };
+
+  // ---------------------------------------------------------------- detail
+  function marked(raw, rec) {
+    const spans = findSpans(raw, rec);
+    let out = "", at = 0;
+    for (const s of spans) {
+      out += esc(raw.slice(at, s.start)) + `<mark style="background:var(--f-${s.field})" title="${LABEL[s.field]}">${esc(raw.slice(s.start, s.end))}</mark>`;
+      at = s.end;
+    }
+    return out + esc(raw.slice(at));
+  }
+  function fieldRows(rec, gold) {
+    return FIELDS.map((f) => {
+      const v = rec[f];
+      const shown = v == null ? `<span class="null">—</span>` : f === "budget" ? esc(new Intl.NumberFormat("en").format(v)) : esc(v);
+      let chk = "";
+      if (gold) {
+        const ok = (gold[f] ?? null) === (v ?? null);
+        chk = `<td class="chk ${ok ? "yes" : "no"}">${ok ? "✓" : "✗"}</td>`;
+        if (!ok) chk = `<td class="chk no">✗<span class="gold">should be ${esc(gold[f] ?? "empty")}</span></td>`;
+      }
+      return `<tr><td>${HL.has(f) ? `<i style="background:var(--f-${f})"></i>` : `<i></i>`}${LABEL[f]}</td><td class="v">${shown}</td>${chk}</tr>`;
+    }).join("");
+  }
+  function select(id) {
+    current = id;
+    document.querySelectorAll(".item").forEach((b) => b.setAttribute("aria-current", b.dataset.id === id));
+    document.querySelectorAll(".crm tr.hl").forEach((r) => r.classList.remove("hl"));
+    if (id === "own") return renderOwn();
+    const m = processed.find((x) => x.id === id);
+    const r = routeOf(m), c = contactOf.get(m.id), rec = m.extracted;
+    const route = r === "ok" ? `→ ${c.id}${c.merged ? `, merged with ${c.messages.filter((x) => x !== m.id).join(", ")}` : ""}` : r === "review" ? "→ review queue" : "Ignored, not an enquiry";
+    const split = m.split === "test" ? "held-out test message: rules were never tuned on it" : "development message";
+    $("detail").innerHTML = `
+      <div class="dh"><span class="ch">${CH[m.channel]}</span><span class="id">${m.id}</span><span class="split">${split}</span><span class="route ${r}">${esc(route)}</span></div>
+      <div class="dbody">
+        <div class="raw"><pre>${marked(m.raw, rec)}</pre><p class="hint">Highlights show where each value was read from.</p></div>
+        <div class="fields">
+          <table>${fieldRows(rec, m.gold)}</table>
+          <p class="note">✓ and ✗ compare against the hand-labelled answer for this message.</p>
+          ${rec.reasons?.length ? `<div class="reasons">Sent to a person: ${esc(rec.reasons.join(", "))}.</div>` : ""}
+        </div>
+      </div>`;
+    if (c) document.getElementById(c.id)?.classList.add("hl");
+  }
+  const SAMPLE = "Buongiorno, mi chiamo Sara Greco. Cerco un appartamento 2+1 in affitto a Durazzo, massimo 550 euro al mese. Tel 347 555 1212";
+  let ownText = SAMPLE;
+  function renderOwn() {
+    $("detail").innerHTML = `
+      <div class="dh"><span class="ch">yours</span><span class="split">Type or paste an enquiry. Try another language, or remove the phone number.</span><span class="route" id="ownRoute"></span></div>
+      <div class="dbody">
+        <div class="raw"><textarea id="own" spellcheck="false">${esc(ownText)}</textarea><pre id="ownMarked" style="margin-top:14px"></pre></div>
+        <div class="fields"><table id="ownFields"></table><div id="ownReasons"></div></div>
+      </div>`;
+    const update = () => {
+      ownText = $("own").value;
+      const rec = extract(ownText);
+      $("ownMarked").innerHTML = marked(ownText, rec);
+      $("ownFields").innerHTML = fieldRows(rec);
+      $("ownRoute").className = "route " + (rec.status === "auto" ? "ok" : rec.status);
+      $("ownRoute").textContent = rec.status === "auto" ? "→ would go straight into the CRM" : rec.status === "review" ? "→ review queue" : "Ignored, not an enquiry";
+      $("ownReasons").innerHTML = rec.reasons.length && rec.status === "review" ? `<div class="reasons">Sent to a person: ${esc(rec.reasons.join(", "))}.</div>` : "";
+    };
+    $("own").addEventListener("input", update);
+    update();
+  }
+
+  // ---------------------------------------------------------------- CRM table
+  $("ccount").textContent = contacts.length;
+  $("crm").innerHTML = contacts.map((c) => `
+    <tr id="${c.id}" data-first="${c.messages[0]}">
+      <td><b>${esc(c.name ?? "—")}</b><small class="mono">${c.id} · ${(c.language ?? "").toUpperCase()}</small></td>
+      <td class="mono">${esc(c.phones[0] ?? "")}<small>${esc(c.emails[0] ?? "")}</small></td>
+      <td>${esc(c.intent)}<small>${esc(c.property_type ?? "")}${c.bedrooms ? ` · ${c.bedrooms} bed` : ""}</small></td>
+      <td class="mono">${money(c.budget, c.currency)}</td>
+      <td>${esc(c.city ?? "")}</td>
+      <td>${esc(c.next_step)}</td>
+      <td>${c.channels.map((ch) => `<span class="ch">${CH[ch]}</span>`).join(" ")}${c.merged ? `<small class="merged">${c.messages.length} messages merged</small>` : ""}</td>
+      <td><span class="st ${c.status}">${c.status === "ok" ? "auto" : "check"}</span>${c.reasons.length ? `<small>${esc(c.reasons.join(", "))}</small>` : ""}</td>
+    </tr>`).join("");
+  $("crm").onclick = (e) => {
+    const tr = e.target.closest("tr[data-first]");
+    if (!tr) return;
+    setFilter("all");
+    select(tr.dataset.first);
+    document.querySelector(`.item[data-id="${tr.dataset.first}"]`)?.scrollIntoView({ block: "nearest" });
+    document.querySelector(".work").scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  $("csv").onclick = () => {
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([toCsv(contacts)], { type: "text/csv" }));
     a.download = "crm-contacts.csv";
     a.click();
   };
-  const run = () => {
-    const r = extract(document.getElementById("own").value);
-    document.getElementById("out").textContent = JSON.stringify(r, null, 2);
-  };
-  document.getElementById("run").onclick = run;
-  run();
 
-  if (new URLSearchParams(location.search).has("select")) document.querySelector('[data-id="t13"]').click();
+  // ---------------------------------------------------------------- accuracy
+  if (evalRes) {
+    const t = evalRes.test, d = evalRes.dev;
+    $("acc").innerHTML = `
+      <div>
+        <h2>Field accuracy on held-out messages</h2>
+        <div class="big">${Math.round(t.fieldAccuracy * 100)}%</div>
+        <p>The rules were written and tuned on ${d.messages} development messages only. The ${t.messages} test messages were labelled by hand and never used to change a rule, so this number is what to expect on new mail.</p>
+        <p>Weakest field: what the person wants (${Math.round(t.perField.intent * 100)}%). "Can I see it on Saturday?" doesn't say buy or rent, and the rules guess. The optional Claude extractor in <code>llm/</code> is meant for exactly these messages. ${t.autoAllCorrect} of ${t.auto} automatically filed test messages had every field right.</p>
+      </div>
+      <div class="bars">${FIELDS.map((f) => `<span>${LABEL[f]}</span><div class="bar"><i class="${t.perField[f] < 0.9 ? "low" : ""}" style="width:${t.perField[f] * 100}%"></i></div><b>${Math.round(t.perField[f] * 100)}%</b>`).join("")}</div>`;
+  } else $("accuracy").hidden = true;
+
+  renderList();
+  const params = new URLSearchParams(location.search);
+  select(params.get("select") ?? (params.has("own") ? "own" : contacts.find((c) => c.merged)?.messages.at(-1) ?? processed[0].id));
+  if (params.get("filter")) setFilter(params.get("filter"));
 </script>
 </body>
 </html>

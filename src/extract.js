@@ -106,7 +106,7 @@ export function extractName(text) {
 }
 
 // ------------------------------------------------------------------ intent & property
-const INTENT_RULES = [
+export const INTENT_RULES = [
   ["list", /\b(sell my|vendere la mia|vendere|te shes|dua te shes|shitje|jap me qera|dua te jap|affittare il mio|to let my|rent out)\b/],
   ["viewing", /\b(viewing|view the|view it|can we view|could we view|see the|can i see|visit|visitare|vedere|ta shoh|ta shihni|te shoh)\b/],
   ["rent", /\b(rent|renting|rental|let|affitto|in affitto|qera|me qera|qira|me qira|holiday let)\b/],
@@ -123,7 +123,7 @@ export function extractIntent(text, property) {
   return property ? "buy" : "other";
 }
 
-const PROPERTY_RULES = [
+export const PROPERTY_RULES = [
   ["office", /\b(office|ufficio|zyre|zyra|zyren)\b/],
   ["shop", /\b(shop|retail|negozio|dyqan)\b/],
   ["land", /\b(land|plot|terreno|toke|token|truall)\b/],
@@ -169,7 +169,7 @@ export function extractBudget(text) {
 }
 
 // ------------------------------------------------------------------ place & rooms
-const CITIES = [
+export const CITIES = [
   ["Tirana", /\b(tirana|tirane|tiranë|blloku|bllok|komunes se parisit|rruga e kavajes)\b/],
   ["Durres", /\b(durres|durresi|durazzo)\b/],
   ["Vlore", /\b(vlore|vlora|valona)\b/],

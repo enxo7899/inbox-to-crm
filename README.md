@@ -4,9 +4,13 @@ Turns enquiries arriving by **email, WhatsApp and web forms**, in **English, Ita
 
 Accuracy is **measured**, not claimed: 98% of fields correct on messages the rules never saw.
 
-**▶ Live demo: https://enxo7899.github.io/inbox-to-crm/** (runs entirely in your browser; paste your own message at the bottom)
+**▶ Live demo: https://enxo7899.github.io/inbox-to-crm/** (runs entirely in your browser. Click any message to see where each value was read from and whether it matches the hand-labelled answer, or paste your own.)
 
 ![35 messages in, 23 clean contacts out](docs/overview.png)
+
+Every message can be opened to check the extraction: the values are highlighted in the original text and compared with the hand-labelled answer.
+
+![A message with each extracted value highlighted](docs/message-detail.png)
 
 ## What it does
 
@@ -48,9 +52,10 @@ The weak spot is **intent** on short follow-ups ("Is the flat in Durrës still f
 
 ```bash
 npm install
-npm test        # 10 tests incl. a held-out accuracy floor of 95%
+npm test        # 14 tests incl. a held-out accuracy floor of 95%
 npm run eval    # per-field accuracy with every mistake listed
-npm run dev     # demo on http://localhost:5174
+npm run dev     # demo on http://localhost:5174 (?select=m03 opens a message, ?own the paste box)
+npm run screenshots  # with dev running: regenerates docs/*.png, fails on console errors
 ANTHROPIC_API_KEY=… node llm/extract-llm.js   # optional: Claude second pass on the review queue
 ```
 
